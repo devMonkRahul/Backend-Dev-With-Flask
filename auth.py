@@ -16,7 +16,6 @@ def user_login():
     data = request.json
     user_instance = User(db)
     user = user_instance.get_user_by_email(data['email'])
-    print("Printing User Info: ",user)
     if not user:
         return jsonify({
             'message': 'User not found!',

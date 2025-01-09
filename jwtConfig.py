@@ -1,4 +1,6 @@
 from flask_jwt_extended import JWTManager
 
 def jwt_config(app):
-    JWTManager().init_app(app)
+    jwt = JWTManager()
+    jwt.init_app(app)
+    return jwt

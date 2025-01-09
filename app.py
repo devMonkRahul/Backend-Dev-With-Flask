@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify
 from dbConfig import connect_db
 from UserModel import User
 from auth import auth
+from user import user_bp
 from jwtConfig import jwt_config
+# from jwtConfig import jwt
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -13,9 +15,32 @@ app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
 
 db = connect_db(app)
-jwt_config(app)
+jwt = jwt_config(app)
+# jwt.init_app(app)
 
 app.register_blueprint(auth, url_prefix='/auth', db=db)
+app.register_blueprint(user_bp, url_prefix='/user', db=db)
+
+@jwt.expired_token_loader
+def token_expired_callback(jwt_header, jwt_data):
+    return jsonify({
+        'message': 'Token has expired!',
+        'status': 401,
+    }), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({
+        'message': 'Invalid token!',
+        'status': 401,
+    }), 401
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    return jsonify({
+        'message': 'Unauthorized!',
+        'status': 401,
+    }), 401
 
 @app.route('/')
 def home():
