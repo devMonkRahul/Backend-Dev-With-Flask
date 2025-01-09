@@ -37,7 +37,10 @@ class User:
     
     def get_user_by_email(self, email):
         data = self.collection.find_one({"email": email})
-        self.name = data['name']
-        self.email = data['email']
-        self.password = data['password']
-        return data
+        if data: 
+            self.name = data['name']
+            self.email = data['email']
+            self.password = data['password']
+            return data
+        else:
+            return None
